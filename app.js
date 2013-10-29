@@ -41,7 +41,7 @@ var chatUsers = {}
 //If the client just connected
 io.sockets.on('connection', function(socket) {
 	console.log('someone connected!');
-	chatUsers[socket.id]= 'username';
+	chatUsers[socket.id]= socket.id;
 	console.log(chatUsers);
 	// io.sockets.emit('newchat', 'new chat user');
 	io.sockets.emit('newchat', chatUsers);
@@ -50,25 +50,25 @@ io.sockets.on('connection', function(socket) {
 		console.log('message was entered');
 	
 		io.sockets.emit('message', message);
-	});
+	})
 
-	// socket.on('username', function(username){
-	// 	io.sockets.emit('username', username);
-	// })
 
-	socket.on('disconnect', function(){
+	socket.on('disconnect', function(userList){
 		console.log('someone disconnected');
-		delete users[socket.id];
+		delete chatUsers[socket.id];
+		console.log(chatUsers);
 		io.sockets.emit('chatover', chatUsers)
 
-	});
+	})
+
+	socket.on('username', function(username){
+		console.log('someone changed a name');
+		chatUsers[socket.id]= username;
+		io.sockets.emit('namechange', chatUsers)
+	})
 });
 
 
-// io.sockets.on('disconnect', function(socket){
-// 	console.log('someone disconnected');
-// 	io.sockets.emit('chatover', 'chat user has left')
-// });
 
 server.listen(3000, function(){
   console.log('Express server listening on port ' + app.get('port'));
